@@ -1,0 +1,31 @@
+---
+// Alternating.ai brand lockup — the "alternating-current" (sine-wave) mark
+// paired with the wordmark. Reuse anywhere: <Logo /> or <Logo size="lg" />.
+const { size = 'md' } = Astro.props;
+const wave = { sm: 16, md: 22, lg: 24 }[size] ?? 22;
+const text = { sm: 'text-sm', md: 'text-lg', lg: 'text-xl' }[size] ?? 'text-lg';
+const tile = [
+  { sm: 'w-7 h-7 rounded-lg', md: 'w-9 h-9 rounded-lg', lg: 'w-10 h-10 rounded-xl' }[size] ?? 'w-9 h-9 rounded-lg',
+  'shrink-0 flex items-center justify-center text-white',
+  'bg-gradient-to-br from-violet-500 via-indigo-500 to-fuchsia-500',
+  'shadow-lg shadow-violet-500/25',
+  'transition-all duration-200 group-hover:shadow-violet-500/40 group-hover:scale-105',
+].join(' ');
+---
+<span class="inline-flex items-center gap-2.5 select-none">
+  <span class={tile} aria-hidden="true">
+    <svg width={wave} height={wave} viewBox="0 0 64 64" fill="none">
+      <path
+        d="M10 32 C14 32 16 20 20 20 C24 20 28 32 32 32 C36 32 40 44 44 44 C48 44 50 32 54 32"
+        stroke="currentColor"
+        stroke-width="5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </span>
+  <span class={`${text} font-extrabold tracking-tight leading-none`}>
+    <span class="text-gray-900 dark:text-white">alternating</span>
+    <span class="bg-gradient-to-r from-violet-500 via-indigo-500 to-fuchsia-500 bg-clip-text text-transparent">.ai</span>
+  </span>
+</span>

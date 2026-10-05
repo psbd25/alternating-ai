@@ -1,17 +1,238 @@
 ---
-
+import Header from '../components/Header.astro';
+import Newsletter from '../components/Newsletter.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
 ---
-
+<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Alternating.ai | AI Solutions for Business &amp; Education — Coming Soon</title>
+    <meta name="description" content="We help businesses and educational institutions get maximum value from AI with minimum cost. Reach out for a free, no-obligation AI blueprint. Launching soon." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <script is:raw>
+      (function() {
+        const stored = localStorage.getItem('theme');
+        const theme = stored || 'dark';
+        if (theme === 'dark') document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+      })();
+    </script>
+  </head>
+  <body class="antialiased">
+    <Header title="Alternating.ai" description="AI Solutions for Business & Education" />
+
+    <main class="pt-16">
+      <!-- ===== Hero ===== -->
+      <section class="relative overflow-hidden">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 sm:pt-28 lg:pt-36 pb-16 sm:pb-20 text-center">
+          <div class="animate-fade-in">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700/40 mb-8">
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span class="text-xs font-semibold text-purple-700 dark:text-purple-300 tracking-wide uppercase">Coming Soon</span>
+            </div>
+          </div>
+
+          <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tighter text-gray-900 dark:text-white mb-6 animate-fade-in delay-100 leading-[1.08]">
+            Unlock the Power of
+            <span class="block bg-gradient-to-r from-violet-600 via-indigo-500 to-fuchsia-500 dark:from-violet-400 dark:via-indigo-400 dark:to-fuchsia-400 bg-clip-text text-transparent">
+              AI for Your Business or Education
+            </span>
+          </h1>
+
+          <p class="text-lg sm:text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in delay-200">
+            We help businesses and educational institutions get maximum value from AI with minimum intervention and cost — starting with a free, no-obligation AI blueprint.
+          </p>
+
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in delay-300">
+            <a href="/business" class="btn-primary w-full sm:w-auto text-base px-8 py-4">
+              Get Your Free Blueprint
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14M12 5l7 7-7 7"></path>
+              </svg>
+            </a>
+            <a href="/blog" class="btn-secondary w-full sm:w-auto text-base px-8 py-4">
+              Read Our Blog
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Stats Bar ===== -->
+      <section class="relative">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div class="grid grid-cols-3 gap-4 sm:gap-8 p-6 sm:p-8 rounded-2xl bg-white/80 dark:bg-white/5 backdrop-blur-xl border border-gray-200/80 dark:border-white/10 shadow-lg shadow-gray-200/50 dark:shadow-black/20">
+            <div class="text-center">
+              <div class="stat-value">2</div>
+              <div class="stat-label">Sectors We Serve</div>
+            </div>
+            <div class="text-center">
+              <div class="stat-value">Free</div>
+              <div class="stat-label">AI Blueprint</div>
+            </div>
+            <div class="text-center">
+              <div class="stat-value">3</div>
+              <div class="stat-label">Simple Steps</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Features ===== -->
+      <section class="py-16 sm:py-24">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-14">
+            <span class="section-badge mb-4 block w-fit mx-auto">
+              <span class="badge-dot"></span>
+              How It Works
+            </span>
+            <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-5 tracking-tight">
+              Our simple process,
+              <span class="block bg-gradient-to-r from-violet-600 to-fuchsia-500 dark:from-violet-400 dark:to-fuchsia-400 bg-clip-text text-transparent">in three steps</span>
+            </h2>
+            <p class="text-lg text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
+              We understand your needs, share a free AI blueprint, and only help you implement it if you want to. Maximum AI value, minimum cost.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+            <div class="feature-card group">
+              <div class="flex items-start gap-4 mb-5">
+                <div class="icon-badge icon-purple">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                </div>
+                <span class="text-xs font-bold text-purple-500 dark:text-purple-400 mt-1.5 tracking-wider uppercase">Step 01</span>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Consultation</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                We start with a deep-dive conversation to understand your goals, challenges, and where AI can make the biggest difference.
+              </p>
+            </div>
+
+            <div class="feature-card group">
+              <div class="flex items-start gap-4 mb-5">
+                <div class="icon-badge icon-blue">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M12 6v6l4 2"></path>
+                  </svg>
+                </div>
+                <span class="text-xs font-bold text-indigo-500 dark:text-indigo-400 mt-1.5 tracking-wider uppercase">Step 02</span>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Strategy</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                We map out a custom AI roadmap tailored to your specific needs, with clear timelines and measurable outcomes.
+              </p>
+            </div>
+
+            <div class="feature-card group">
+              <div class="flex items-start gap-4 mb-5">
+                <div class="icon-badge icon-emerald">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  </svg>
+                </div>
+                <span class="text-xs font-bold text-emerald-500 dark:text-emerald-400 mt-1.5 tracking-wider uppercase">Step 03</span>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Implementation</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                Optional hands-on implementation. We only build what you need, with ongoing support to keep things running smoothly.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-divider max-w-4xl mx-auto"></div>
+
+      <!-- ===== Blog Preview ===== -->
+      <section class="py-16 sm:py-24">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex flex-col sm:flex-row items-center justify-between mb-10">
+            <div>
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Latest Articles</h2>
+              <p class="text-gray-500 dark:text-gray-400 mt-1">Fresh insights on AI strategy and implementation</p>
+            </div>
+            <a href="/blog" class="btn-ghost mt-4 sm:mt-0">
+              View All
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14M12 5l7 7-7 7"></path>
+              </svg>
+            </a>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
+            <article class="feature-card group cursor-pointer">
+              <div class="flex items-center gap-2 mb-4">
+                <span class="tag-pill tag-purple">AI</span>
+                <span class="tag-pill tag-blue">Intro</span>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors content-blur">
+                What Is AI?
+              </h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4 content-blur">
+                Understanding artificial intelligence and real-world applications.
+              </p>
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-400 dark:text-gray-500 content-blur">Oct 1, 2026</span>
+                <span class="text-xs font-semibold text-purple-500 dark:text-purple-400 flex items-center gap-1 group-hover:gap-2 transition-all">
+                  Read
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M5 12h14M12 5l7 7-7 7"></path>
+                  </svg>
+                </span>
+              </div>
+            </article>
+
+            <article class="feature-card group cursor-pointer">
+              <div class="flex items-center gap-2 mb-4">
+                <span class="tag-pill tag-amber">Business</span>
+                <span class="tag-pill tag-emerald">Education</span>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors content-blur">
+                AI for Business and Education
+              </h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4 content-blur">
+                How AI can transform business strategies and educational outcomes.
+              </p>
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-gray-400 dark:text-gray-500 content-blur">Sep 28, 2026</span>
+                <span class="text-xs font-semibold text-purple-500 dark:text-purple-400 flex items-center gap-1 group-hover:gap-2 transition-all">
+                  Read
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M5 12h14M12 5l7 7-7 7"></path>
+                  </svg>
+                </span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Newsletter CTA ===== -->
+      <section class="py-8 sm:py-12">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Newsletter />
+        </div>
+      </section>
+
+      <!-- ===== Footer ===== -->
+      <Footer />
+    </main>
+  </body>
 </html>

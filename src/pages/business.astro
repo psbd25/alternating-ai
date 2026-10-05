@@ -1,0 +1,242 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Coming Soon | AI Solutions for Business &amp; Education — Alternating.ai</title>
+    <meta
+      name="description"
+      content="We're building AI solutions for business and education. Reach out for a free, no-obligation AI blueprint — maximum value, minimum cost. Coming soon."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <script is:raw>
+      (function() {
+        const stored = localStorage.getItem('theme');
+        const theme = stored || 'dark';
+        if (theme === 'dark') document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+      })();
+    </script>
+  </head>
+  <body class="antialiased">
+    <Header title="Coming Soon" description="AI solutions for business & education" />
+
+    <main class="pt-16 min-h-screen flex flex-col">
+      <!-- ===== Coming Soon ===== -->
+      <section class="relative flex-1 overflow-hidden">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center w-full">
+          <div class="animate-fade-in">
+            <div
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-700/40 mb-8"
+            >
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
+              </span>
+              <span class="text-xs font-semibold text-violet-700 dark:text-violet-300 tracking-wide uppercase">Coming Soon</span>
+            </div>
+          </div>
+
+          <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tighter text-gray-900 dark:text-white mb-6 leading-[1.08] animate-fade-in delay-100">
+            AI solutions for
+            <span
+              class="block bg-gradient-to-r from-violet-600 via-indigo-500 to-fuchsia-500 dark:from-violet-400 dark:via-indigo-400 dark:to-fuchsia-400 bg-clip-text text-transparent"
+            >
+              business &amp; education
+            </span>
+          </h1>
+
+          <p class="text-lg sm:text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed animate-fade-in delay-200">
+            We're on a mission to help you get <span class="font-semibold text-gray-900 dark:text-white">maximum value from AI</span> with <span class="font-semibold text-gray-900 dark:text-white">minimum intervention and cost</span>. Here's how it works:
+          </p>
+          <!-- 3-step process -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 text-left mb-12 animate-fade-in delay-300">
+            <div class="feature-card p-6 sm:p-7">
+              <div class="icon-badge icon-emerald mb-5">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+              <div class="text-xs font-bold text-emerald-500 dark:text-emerald-400 tracking-wider uppercase mb-2">Step 01</div>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Tell us your goals — or what you do</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                Already know what you want? Tell us what you're solving. Still figuring it out? Share what you do, and we'll help you identify the AI solutions that fit. Either way, we listen first — no jargon, no pressure.
+              </p>
+            </div>
+
+            <div class="feature-card p-6 sm:p-7">
+              <div class="icon-badge icon-purple mb-5">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+              </div>
+              <div class="text-xs font-bold text-purple-500 dark:text-purple-400 tracking-wider uppercase mb-2">Step 02</div>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Get a free AI blueprint</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                We map out exactly how AI can help and share a detailed blueprint. This part is completely free.
+              </p>
+            </div>
+
+            <div class="feature-card p-6 sm:p-7">
+              <div class="icon-badge icon-blue mb-5">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+              </div>
+              <div class="text-xs font-bold text-indigo-500 dark:text-indigo-400 tracking-wider uppercase mb-2">Step 03</div>
+              <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Implement only if you want</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                You only pay if you decide to have us build it. Maximum value, minimum cost.
+              </p>
+            </div>
+          </div>
+          <!-- ===== Questions we can help you answer ===== -->
+          <div class="text-left mb-6 animate-fade-in delay-300">
+            <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+              Questions we can help you answer
+            </h2>
+            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+              A few things teams regularly ask us — and how we approach each one.
+            </p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-12 text-left animate-fade-in delay-300">
+            <div class="feature-card p-6">
+              <div class="icon-badge icon-purple mb-4">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+              </div>
+              <h3 class="text-base font-bold text-gray-900 dark:text-white mb-1.5">Which AI use cases will actually pay off for you?</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed content-blur">We identify where AI creates real, measurable value for your business — and where it's worth waiting.</p>
+            </div>
+
+            <div class="feature-card p-6">
+              <div class="icon-badge icon-blue mb-4">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
+              </div>
+              <h3 class="text-base font-bold text-gray-900 dark:text-white mb-1.5">Frontier or focused model: which do you actually need?</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed content-blur">The most powerful model isn't always the right one. We match the model to the task so you get results without overpaying.</p>
+            </div>
+
+            <div class="feature-card p-6">
+              <div class="icon-badge icon-emerald mb-4">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+              </div>
+              <h3 class="text-base font-bold text-gray-900 dark:text-white mb-1.5">How should your AI workflow be designed?</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed content-blur">We design AI around how your team already works — your tools, your processes, and your people.</p>
+            </div>
+
+            <div class="feature-card p-6">
+              <div class="icon-badge icon-amber mb-4">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              </div>
+              <h3 class="text-base font-bold text-gray-900 dark:text-white mb-1.5">How do we keep your data private and secure?</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed content-blur">Privacy by design — from data handling to deployment, we build in the guardrails your business requires.</p>
+            </div>
+
+            <div class="feature-card p-6">
+              <div class="icon-badge icon-rose mb-4">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="8" rx="2"></rect><rect x="2" y="14" width="20" height="8" rx="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+              </div>
+              <h3 class="text-base font-bold text-gray-900 dark:text-white mb-1.5">Can a local model handle this task?</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed content-blur">Sometimes the smartest answer is on your own hardware. We'll tell you honestly when a local model is the right call.</p>
+            </div>
+
+            <div class="feature-card p-6">
+              <div class="icon-badge icon-blue mb-4">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+              </div>
+              <h3 class="text-base font-bold text-gray-900 dark:text-white mb-1.5">Can we set up and run a local model for you?</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed content-blur">From first install to production and day-to-day maintenance — we get you to a working, maintainable local model.</p>
+            </div>
+          </div>
+          <!-- CTA card -->
+          <div class="feature-card max-w-xl mx-auto p-8 sm:p-10 text-left animate-fade-in delay-400">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Want to know more?</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">
+              Reach out directly and we'll get back to you — or leave your email and we'll notify you the moment we launch.
+            </p>
+
+            <a
+              href="mailto:psbd225@gmail.com?subject=Reaching%20out%20to%20Alternating.ai"
+              class="btn-primary w-full text-base px-6 py-3.5 mb-4"
+            >
+              Reach out
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14M12 5l7 7-7 7"></path>
+              </svg>
+            </a>
+
+            <a
+              href="mailto:psbd225@gmail.com"
+              class="group mb-1 flex items-center justify-center gap-2 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+              </svg>
+              <span class="underline underline-offset-4 decoration-violet-400/40 group-hover:decoration-violet-500">psbd225@gmail.com</span>
+            </a>
+
+            <div class="flex items-center gap-3 my-5">
+              <div class="h-px flex-1 bg-gray-200 dark:bg-white/10"></div>
+              <span class="text-xs uppercase tracking-wider text-gray-400 dark:text-gray-500">or</span>
+              <div class="h-px flex-1 bg-gray-200 dark:bg-white/10"></div>
+            </div>
+
+            <form id="notify-form" class="flex flex-col sm:flex-row gap-3">
+              <input
+                type="email"
+                name="email"
+                required
+                placeholder="you@email.com"
+                aria-label="Email address"
+                class="flex-1 px-5 py-3 rounded-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500/40 transition"
+              />
+              <button type="submit" class="btn-secondary whitespace-nowrap text-sm px-6 py-3">Get notified</button>
+            </form>
+            <p id="notify-msg" class="mt-4 text-sm font-medium text-emerald-600 dark:text-emerald-400 hidden">
+              Thanks! We'll be in touch soon. 🚀
+            </p>
+          </div>
+
+          <p class="mt-8 text-xs text-gray-400 dark:text-gray-500">
+            Free blueprint · No obligation · No spam — unsubscribe anytime
+          </p>
+        </div>
+      </section>
+
+      <!-- ===== Footer ===== -->
+      <Footer />
+    </main>
+
+    <script>
+      const form = document.getElementById('notify-form');
+      const msg = document.getElementById('notify-msg');
+      form?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = form.querySelector('input[name="email"]').value;
+        const subject = encodeURIComponent('Notify me when Alternating.ai launches');
+        const body = encodeURIComponent(
+          `Please notify me when Alternating.ai launches.\n\nMy email: ${email}`
+        );
+        window.location.href = `mailto:psbd225@gmail.com?subject=${subject}&body=${body}`;
+        msg?.classList.remove('hidden');
+        form?.classList.add('hidden');
+      });
+    </script>
+  </body>
+</html>

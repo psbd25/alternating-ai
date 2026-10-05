@@ -1,0 +1,55 @@
+---
+import Logo from './Logo.astro';
+---
+<footer class="border-t border-gray-200/80 dark:border-white/10 bg-gray-50/80 dark:bg-black/20 backdrop-blur-xl">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+      <!-- Brand -->
+      <div class="sm:col-span-2 md:col-span-1">
+        <a href="/" class="group mb-3" aria-label="Alternating.ai Home">
+          <Logo size="sm" />
+        </a>
+        <p class="text-xs text-gray-500 dark:text-gray-400 leading-relaxed max-w-[220px]">
+          AI solutions for business and education. Maximum value, minimum cost. Launching soon.
+        </p>
+      </div>
+
+      <!-- Navigation -->
+      <div>
+        <h4 class="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-3">Navigate</h4>
+        <nav class="flex flex-col gap-2">
+          <a href="/" class="text-xs text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Home</a>
+          <a href="/blog" class="text-xs text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Blog</a>
+          <a href="/business" class="text-xs text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors">Business</a>
+        </nav>
+      </div>
+
+      <!-- Services -->
+      <div>
+        <h4 class="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-3">Services</h4>
+        <nav class="flex flex-col gap-2">
+          <span class="text-xs text-gray-500 dark:text-gray-400">AI Consultation</span>
+          <span class="text-xs text-gray-500 dark:text-gray-400">Strategy Design</span>
+          <span class="text-xs text-gray-500 dark:text-gray-400">Implementation</span>
+        </nav>
+      </div>
+
+      <!-- Reach out -->
+      <div>
+        <h4 class="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-3">Reach Out</h4>
+        <nav class="flex flex-col gap-2">
+          <a href="mailto:psbd225@gmail.com" class="text-xs text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">psbd225@gmail.com</a>
+          <a href="/business" class="text-xs text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">Request a free blueprint</a>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="mt-10 pt-6 border-t border-gray-200/80 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p class="text-xs text-gray-400 dark:text-gray-500">&copy; 2026 Alternating.ai. All rights reserved.</p>
+      <p class="text-xs text-gray-400 dark:text-gray-500">
+        Built with <span class="text-rose-500">&hearts;</span> by Pawan Subedi
+      </p>
+    </div>
+  </div>
+</footer>

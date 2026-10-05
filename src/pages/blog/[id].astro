@@ -1,0 +1,152 @@
+---
+import { getCollection, render } from 'astro:content';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import '../../styles/global.css';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({
+    params: { id: post.id.replace(/\.md$/, '') },
+  }));
+}
+
+const slug = Astro.params.id ?? '';
+const allPosts = await getCollection('blog');
+const post = allPosts.find((p) => p.id.replace(/\.md$/, '') === slug);
+if (!post) {
+  return Astro.redirect('/blog');
+}
+const { Content } = await render(post);
+
+const words = post.body.trim().split(/\s+/).length;
+const readMinutes = Math.max(1, Math.round(words / 200));
+
+// Previous / next (by date)
+const byDate = [...allPosts].sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const idx = byDate.findIndex((p) => p.id === post.id);
+const newer = idx > -1 && idx < byDate.length - 1 ? byDate[idx + 1] : null;
+const older = idx > -1 && idx > 0 ? byDate[idx - 1] : null;
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{post.data.title} | Alternating.ai</title>
+    <meta
+      name="description"
+      content={post.data.summary || post.body.replace(/[#>*`-]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 155)}
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <script is:raw>
+      (function() {
+        const stored = localStorage.getItem('theme');
+        const theme = stored || 'dark';
+        if (theme === 'dark') document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+      })();
+    </script>
+  </head>
+  <body class="antialiased">
+    <Header title={post.data.title} description={post.data.category || 'Blog'} />
+
+    <main class="pt-16">
+      <article>
+        <header class="max-w-3xl mx-auto px-4 sm:px-6 pt-12 sm:pt-16 pb-8">
+          <a href="/blog" class="inline-flex items-center gap-1.5 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:gap-2.5 transition-all mb-8">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M19 12H5M12 19l-7-7 7-7"></path>
+            </svg>
+            Back to all articles
+          </a>
+
+          <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-5 leading-[1.15]">
+            {post.data.title}
+          </h1>
+
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500 dark:text-gray-400">
+            <span class="inline-flex items-center gap-1.5">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+                <path d="M16 2v4M8 2v4M3 10h18"></path>
+              </svg>
+              {new Date(post.data.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            </span>
+            <span class="inline-flex items-center gap-1.5">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 6v6l4 2"></path>
+              </svg>
+              {readMinutes} min read
+            </span>
+            {post.data.category && <span class="tag-pill tag-blue">{post.data.category}</span>}
+          </div>
+        </header>
+
+        <div class="post-content max-w-3xl mx-auto px-4 sm:px-6">
+          <Content />
+        </div>
+
+        <!-- Tags -->
+        {(post.data.tags || []).length > 0 && (
+          <div class="max-w-3xl mx-auto px-4 sm:px-6 pt-8">
+            <div class="flex flex-wrap gap-2">
+              {post.data.tags.map((tag) => (
+                <a
+                  href={`/blog?tag=${encodeURIComponent(tag)}`}
+                  class="tag-pill tag-purple hover:opacity-80 transition-opacity"
+                >
+                  {tag}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- Author note -->
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 pt-10 pb-4">
+          <div class="feature-card p-6 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 via-indigo-500 to-fuchsia-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+              P
+            </div>
+            <div>
+              <p class="text-sm font-bold text-gray-900 dark:text-white">Written by Pawan Subedi</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Every word on this site is written by a human — no AI summaries, ever.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prev / Next -->
+        {(newer || older) && (
+          <nav class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {older ? (
+                <a href={`/blog/${older.id.replace(/\.md$/, '')}`} class="feature-card p-5 group hover:-translate-y-0.5 transition-transform">
+                  <span class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">← Older</span>
+                  <span class="block mt-1 text-sm font-bold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">{older.data.title}</span>
+                </a>
+              ) : (
+                <div></div>
+              )}
+              {newer ? (
+                <a href={`/blog/${newer.id.replace(/\.md$/, '')}`} class="feature-card p-5 text-right group hover:-translate-y-0.5 transition-transform sm:col-start-2">
+                  <span class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Newer →</span>
+                  <span class="block mt-1 text-sm font-bold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">{newer.data.title}</span>
+                </a>
+              ) : null}
+            </div>
+          </nav>
+        )}
+      </article>
+    </main>
+
+    <Footer />
+  </body>
+</html>
