@@ -22,3 +22,6 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# Local documentation / guides not part of the repo
+BLOG_ADD_GUIDE.md

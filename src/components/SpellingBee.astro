@@ -1,0 +1,249 @@
+---
+---
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-200 dark:border-gray-700 overflow-hidden">
+  <div class="bg-gray-100 dark:bg-gray-700/40 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+    <h2 class="text-xl font-bold text-purple-600 dark:text-purple-300">Spelling Bee Practice</h2>
+    <p class="text-sm text-gray-500 dark:text-gray-400">Type a word, then hear it letter-by-letter and whole</p>
+  </div>
+
+  <div class="p-6 space-y-5">
+    <div id="word-display" class="text-3xl font-bold tracking-[0.3em] text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 min-h-[76px] flex items-center justify-center text-gray-400 dark:text-gray-500">&nbsp;</div>
+
+    <div class="flex flex-col sm:flex-row gap-3">
+      <input id="spell-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type a word to practice..." class="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
+      <button id="check-btn" class="px-5 py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-colors">Check</button>
+    </div>
+
+    <div id="audio-panel" class="hidden rounded-lg border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/20 p-4 space-y-3">
+      <p id="countdown-msg" class="text-sm text-purple-700 dark:text-purple-300 text-center"></p>
+      <div class="flex flex-col sm:flex-row gap-2">
+        <button id="play-now-btn" class="flex-1 px-4 py-2 rounded-lg font-semibold text-white bg-indigo-500 hover:bg-indigo-600 transition-colors">&#128266; Play now</button>
+        <button id="replay-word-btn" class="flex-1 px-4 py-2 rounded-lg font-semibold text-gray-800 dark:text-gray-100 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">&#9851; Whole word</button>
+        <button id="replay-letters-btn" class="flex-1 px-4 py-2 rounded-lg font-semibold text-gray-800 dark:text-gray-100 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">&#123482; Letters</button>
+      </div>
+    </div>
+
+    <div class="space-y-2">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">My words</h3>
+        <span id="word-count" class="text-xs text-gray-400">0</span>
+      </div>
+      <ul id="word-list" class="space-y-1 max-h-48 overflow-y-auto"></ul>
+      <p id="empty-msg" class="text-xs text-gray-400 italic">No words yet. Type one above to start.</p>
+
+      <button id="copy-btn" class="w-full mt-2 px-4 py-3 rounded-lg font-semibold text-white bg-emerald-500 hover:bg-emerald-600 transition-colors text-lg">
+        &#128203; Copy my words
+      </button>
+      <p class="text-xs text-gray-500 dark:text-gray-400 text-center">Tap the button, then open <b>Notes</b> and press <b>paste</b> (&#8984;V) to keep them safe.</p>
+      <button id="clear-btn" class="w-full px-4 py-2 rounded-lg text-sm font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors">
+        Start over
+      </button>
+      <p id="save-msg" class="text-sm text-emerald-600 dark:text-emerald-400 text-center h-5 font-semibold"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const STORAGE_KEY = 'spellingbee_words';
+
+    const input = document.getElementById('spell-input');
+    const display = document.getElementById('word-display');
+    const checkBtn = document.getElementById('check-btn');
+    const audioPanel = document.getElementById('audio-panel');
+    const countdownMsg = document.getElementById('countdown-msg');
+    const playNowBtn = document.getElementById('play-now-btn');
+    const replayWordBtn = document.getElementById('replay-word-btn');
+    const replayLettersBtn = document.getElementById('replay-letters-btn');
+    const listEl = document.getElementById('word-list');
+    const emptyMsg = document.getElementById('empty-msg');
+    const wordCount = document.getElementById('word-count');
+    const copyBtn = document.getElementById('copy-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    const saveMsg = document.getElementById('save-msg');
+
+    let words = loadWords();
+    let currentWord = '';
+
+    const synth = window.speechSynthesis;
+    function pickVoice() {
+      const v = synth.getVoices().filter((x) => x.lang && x.lang.indexOf('en') === 0);
+      return v[0] || null;
+    }
+    function stopAudio() {
+      if (synth) synth.cancel();
+    }
+    function speakWhole(word) {
+      if (!synth) return;
+      synth.cancel();
+      const u = new SpeechSynthesisUtterance(word);
+      const voice = pickVoice();
+      if (voice) u.voice = voice;
+      u.rate = 0.85;
+      u.onend = function () { speakLetters(word, 0); };
+      synth.speak(u);
+    }
+    function speakLetters(word, i) {
+      if (!synth) return;
+      if (i >= word.length) return;
+      const u = new SpeechSynthesisUtterance(word[i]);
+      const voice = pickVoice();
+      if (voice) u.voice = voice;
+      u.rate = 0.6;
+      u.pitch = 1.1;
+      u.onend = function () { setTimeout(function () { speakLetters(word, i + 1); }, 300); };
+      synth.speak(u);
+    }
+    function playNow(word) {
+      countdownMsg.textContent = 'Speaking...';
+      speakWhole(word);
+    }
+
+    function startCountdown(word) {
+      let n = 3;
+      countdownMsg.textContent = 'Hearing the word in ' + n + 's...';
+      const timer = setInterval(function () {
+        n--;
+        if (n <= 0) {
+          clearInterval(timer);
+          playNow(word);
+        } else {
+          countdownMsg.textContent = 'Hearing the word in ' + n + 's...';
+        }
+      }, 1000);
+    }
+
+    // ---- Storage: words are saved automatically after every change ----
+    function loadWords() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const arr = raw ? JSON.parse(raw) : [];
+        return Array.isArray(arr) ? arr : [];
+      } catch (e) {
+        return [];
+      }
+    }
+    function saveWords() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(words)); } catch (e) {}
+    }
+
+    // ---- Build a clean, Notes-friendly list of the words ----
+    function buildText() {
+      const header = 'My Spelling Bee Words (' + words.length + ')';
+      const lines = words.map(function (w, i) { return (i + 1) + '. ' + w; });
+      return [header].concat(lines).join('\n');
+    }
+    function legacyCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'absolute';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      return ok;
+    }
+    function copyWords() {
+      if (!words.length) {
+        showMsg('Type some words first!', true);
+        return;
+      }
+      const text = buildText();
+      function done() { showMsg('Copied! Now open Notes and paste it.'); }
+      function fail() { showMsg('Long-press the words to copy them.', true); }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {
+          legacyCopy(text) ? done() : fail();
+        });
+      } else if (legacyCopy(text)) {
+        done();
+      } else {
+        fail();
+      }
+    }
+    function showMsg(text, warn) {
+      saveMsg.textContent = text;
+      saveMsg.className = 'text-sm text-center h-5 font-semibold ' +
+        (warn ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400');
+      clearTimeout(showMsg._t);
+      showMsg._t = setTimeout(function () { saveMsg.textContent = ''; }, 3000);
+    }
+
+    function renderList() {
+      listEl.innerHTML = '';
+      emptyMsg.style.display = words.length ? 'none' : 'block';
+      wordCount.textContent = words.length;
+      words.forEach(function (w) {
+        const li = document.createElement('li');
+        li.className = 'flex items-center justify-between px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700';
+        const span = document.createElement('span');
+        span.className = 'text-gray-800 dark:text-gray-100 tracking-wider';
+        span.textContent = w;
+        const btn = document.createElement('button');
+        btn.className = 'ml-3 text-purple-500 dark:text-purple-400 text-lg hover:text-purple-700';
+        btn.title = 'Play audio for "' + w + '"';
+        btn.textContent = '\u25B6';
+        btn.addEventListener('click', function () { stopAudio(); speakWhole(w); });
+        li.appendChild(span);
+        li.appendChild(btn);
+        listEl.appendChild(li);
+      });
+    }
+
+    function checkWord() {
+      const word = input.value.trim();
+      if (!word) {
+        input.placeholder = 'Please type a word first';
+        input.focus();
+        return;
+      }
+      const clean = word.toLowerCase();
+      currentWord = clean;
+      display.textContent = clean.toUpperCase();
+      display.classList.remove('text-gray-400', 'dark:text-gray-500');
+      display.classList.add('text-gray-900', 'dark:text-white');
+
+      if (words.indexOf(clean) === -1) {
+        words.push(clean);
+        saveWords();
+        renderList();
+      }
+
+      audioPanel.classList.remove('hidden');
+      startCountdown(clean);
+      input.value = '';
+      input.focus();
+    }
+
+    checkBtn.addEventListener('click', checkWord);
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') checkWord();
+    });
+    playNowBtn.addEventListener('click', function () { playNow(currentWord); });
+    replayWordBtn.addEventListener('click', function () {
+      if (currentWord) { stopAudio(); speakWhole(currentWord); }
+    });
+    replayLettersBtn.addEventListener('click', function () {
+      if (currentWord && synth) { synth.cancel(); speakLetters(currentWord, 0); }
+    });
+    copyBtn.addEventListener('click', copyWords);
+    clearBtn.addEventListener('click', function () {
+      words = [];
+      saveWords();
+      renderList();
+      stopAudio();
+      showMsg('Cleared. Start fresh!');
+    });
+
+    if (synth) {
+      synth.getVoices();
+      if (synth.onvoiceschanged !== undefined) {
+        synth.onvoiceschanged = function () { synth.getVoices(); };
+      }
+    }
+    renderList();
+  })();
+</script>

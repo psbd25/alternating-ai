@@ -8,13 +8,13 @@
 
 ## 1. Tech stack
 
-| Layer | Choice | Notes |
-|---|---|---|
-| Framework | **Astro 7** | Static-site builder; renders pages to plain HTML at build time. |
-| Styling | **Tailwind CSS v4** | Wired via the `@tailwindcss/vite` plugin (`astro.config.mjs`). No `tailwind.config.js` — v4 is CSS-first. |
-| Components | **Astro `.astro` files** | Server-rendered; no client JS by default. |
-| Content | **Astro Content Collections** | Markdown posts in `src/content/blog/`, schema in `src/content.config.ts`. |
-| Output | **Static HTML** in `dist/` | Hostable anywhere (see §10). |
+| Layer      | Choice                        | Notes                                                                                                     |
+| ---------- | ----------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Framework  | **Astro 7**                   | Static-site builder; renders pages to plain HTML at build time.                                           |
+| Styling    | **Tailwind CSS v4**           | Wired via the `@tailwindcss/vite` plugin (`astro.config.mjs`). No `tailwind.config.js` — v4 is CSS-first. |
+| Components | **Astro `.astro` files**      | Server-rendered; no client JS by default.                                                                 |
+| Content    | **Astro Content Collections** | Markdown posts in `src/content/blog/`, schema in `src/content.config.ts`.                                 |
+| Output     | **Static HTML** in `dist/`    | Hostable anywhere (see §10).                                                                              |
 
 There is no database, no API, and no server runtime. "Forms" open the visitor's own mail client
 via `mailto:` links (see §8).
@@ -23,14 +23,15 @@ via `mailto:` links (see §8).
 
 ## 2. Pages & routing
 
-| URL | File | Purpose |
-|---|---|---|
-| `/` | `src/pages/index.astro` | Home — animated "coming soon" hero, feature cards, tech chips, blog previews, FAQ, CTA. |
-| `/business` | `src/pages/business.astro` | Business/education page — how-it-works steps, "Questions we can help you answer", CTA card with email + notify form. |
-| `/blog` | `src/pages/blog.astro` | Blog listing — all posts sorted by date, keyword search, tag filter (`?tag=`), topic stats. |
-| `/blog/<slug>` | `src/pages/blog/[id].astro` | Individual post — renders the Markdown, read-time, tags, author note, prev/next. |
+| URL            | File                        | Purpose                                                                                                              |
+| -------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `/`            | `src/pages/index.astro`     | Home — animated "coming soon" hero, feature cards, tech chips, blog previews, FAQ, CTA.                              |
+| `/business`    | `src/pages/business.astro`  | Business/education page — how-it-works steps, "Questions we can help you answer", CTA card with email + notify form. |
+| `/blog`        | `src/pages/blog.astro`      | Blog listing — all posts sorted by date, keyword search, tag filter (`?tag=`), topic stats.                          |
+| `/blog/<slug>` | `src/pages/blog/[id].astro` | Individual post — renders the Markdown, read-time, tags, author note, prev/next.                                     |
 
 Routing notes:
+
 - A file in `src/pages/` maps to a route: `index.astro` → `/`, `business.astro` → `/business`.
 - `blog/[id].astro` is a **dynamic route** — `getStaticPaths()` generates one page per Markdown file
   (`/blog/what-is-ai`, …). Unknown slugs redirect to `/blog`.
@@ -110,7 +111,7 @@ ClineProject/
 
 1. **Per-page inline script** (in each page's `<head>`, runs before paint) reads
    `localStorage.theme`; **dark is the default** when the visitor hasn't chosen yet. It sets the
-   `.dark` class on `<html>` *before* first paint → no flash-of-wrong-theme (FOUC).
+   `.dark` class on `<html>` _before_ first paint → no flash-of-wrong-theme (FOUC).
 2. **Header toggle** (`Header.astro`) — the sun/moon button flips `.dark` on `<html>`,
    persists the choice in `localStorage.theme`, swaps the icon, and adds a subtle shadow on scroll.
 3. **Tailwind** — because of the `@custom-variant dark` rule, every `dark:` utility only applies
@@ -123,14 +124,19 @@ and reloads, and there's never a theme flash.
 
 ## 6. "Coming soon" placeholder blur
 
-Some copy is intentionally not legible yet — it should *look* like there's content without being
+Some copy is intentionally not legible yet — it should _look_ like there's content without being
 readable (unpublished blog previews, answers that aren't final). That's the `.content-blur` class:
 
 ```css
-.content-blur { filter: blur(4px); user-select: none; pointer-events: none; }
+.content-blur {
+  filter: blur(4px);
+  user-select: none;
+  pointer-events: none;
+}
 ```
 
 Applied to:
+
 - **Home → "Latest Articles"** cards: title, description, and date are blurred; the tags and the
   "Read" affordance stay sharp.
 - **Business → "Questions we can help you answer"**: each question title stays sharp; the answer
@@ -214,6 +220,7 @@ Leftover / not wired in (safe to ignore or delete): `src/components/ThemeToggle.
 ## 11. Maintenance quick-reference
 
 **Add a blog post**
+
 1. Create `src/content/blog/<slug>.md`.
 2. Add frontmatter:
    ```
@@ -228,10 +235,12 @@ Leftover / not wired in (safe to ignore or delete): `src/components/ThemeToggle.
 3. Write Markdown below. That's it — it shows on `/blog`, in search, and at `/blog/<slug>`.
 
 **Un-blur the home page previews**
+
 - The "Latest Articles" cards in `index.astro` are hard-coded placeholders. Once real posts exist,
   link them to `/blog/<slug>` and remove `content-blur` from the title/description/date.
 
 **Change the contact email**
+
 - Replace `psbd225@gmail.com` (Business, Footer, Newsletter, Home).
 
 ---
@@ -245,3 +254,108 @@ Leftover / not wired in (safe to ignore or delete): `src/components/ThemeToggle.
 - **SEO:** add `sitemap.xml`, `robots.txt`, Open Graph meta, and canonical URLs.
 - **Clean up:** remove the unused layouts/components and `test.md` if they won't be used.
 - **Domain / CI:** connect a custom domain and a build pipeline on the chosen host.
+
+**How to add a new blog post to the Alternating.ai site**
+The blog is powered by Astro’s **Content Collection** feature. All posts live as Markdown files under `src/content/blog/`. When you add (or edit) a file there and rebuild the site, Astro automatically picks it up and generates the corresponding page at `/blog/<slug>` (where the slug is the filename without the `.md` extension).
+
+---
+
+### 1. File location & naming
+
+```
+src/content/blog/
+   ├── what-is-ai.md
+   ├── ai-business-education.md
+   ├── ai-ethics.md
+   └── YOUR-NEW-POST.md   ← add your file here
+```
+
+- Use a **kebab‑case** filename (e.g., `my-first-ai-post.md`).
+- The filename becomes part of the URL: `/blog/my-first-ai-post`.
+
+### 2. Required front‑matter (YAML block at the top of the file)
+
+Each file must start and end with triple dashes (`---`) and contain fields that match the schema defined in `src/content.config.ts`:
+
+```yaml
+---
+title: "Your Post Title"
+date: 2026-10-05 # ISO‑8601 date (YYYY-MM-DD); time is optional
+category: "AI" # optional – appears as a tag pill
+tags: ["AI", "Tutorial", "For Beginners"] # array of strings
+summary: "A short blurb that appears in lists (optional)."
+---
+```
+
+- `title` – required, used in the `<title>` tag and post header.
+- `date` – required; determines sort order (newest first).
+- `category` – optional string; if present, it shows as a tag pill.
+- `tags` – optional array of strings; each tag becomes a clickable filter on the blog index.
+- `summary` – optional plain‑text description; if omitted, Astro falls back to the first lines of the body.
+
+### 3. Markdown body
+
+After the closing `---`, write your article in standard Markdown. You can use headings, lists, code blocks, images (place images in `src/content/blog/` or `public/` and reference them relatively), etc.
+
+**Example stub:**
+
+```markdown
+---
+title: "Getting Started with LLMs"
+date: 2026-10-05
+category: "AI"
+tags: ["LLM", "Prompt Engineering", "Guide"]
+summary: "A practical introduction to large language models for beginners."
+---
+
+# Getting Started with LLMs
+
+Large language models (LLMs) are transforming how we interact with AI...
+
+## Why LLMs matter
+
+- They enable natural‑language interfaces…
+- …
+
+## How to begin
+
+1. Pick a model (e.g., Llama 3, Mistral)…
+2. …
+```
+
+### 4. Test locally (optional but recommended)
+
+```bash
+# Install deps if you haven’t already
+npm install
+
+# Start the dev server
+npm run dev
+```
+
+Open `http://localhost:4321/blog/your-new-post` to see the post. The blog index (`/blog`) will automatically list it.
+
+### 5. Build for production (to verify before deploying)
+
+```bash
+npm run build   # outputs to ./dist/
+npm run preview # serve the built site locally
+```
+
+### 6. Deploy
+
+- **If you’re using GitHub integration (recommended)**: commit the new Markdown file and push to your repo. Cloudflare Pages will detect the push, run `npm run build`, and deploy the updated site automatically.
+- **If you’re using Direct Upload**: rebuild locally (`npm run build`) and upload the entire `dist/` folder again via the Cloudflare dashboard (or `wrangler pages deploy dist --project-name=alternating-ai`).
+
+---
+
+### Quick checklist
+
+- [ ] File placed in `src/content/blog/` with `.md` extension.
+- [ ] Front‑matter includes `title` and `date` (others optional).
+- [ ] Markdown body written after the front‑matter.
+- [ ] (Local) `npm run dev` shows the new post.
+- [ ] (Local) `npm run build` completes without errors.
+- [ ] Commit & push (or rebuild & upload) → Cloudflare redeploys.
+
+That’s it—your new article will be live at `https://alternating.ai/blog/your-new-post` (or `https://www.alternating.ai/blog/...` if you prefer the www subdomain). Happy writing! 🚀
