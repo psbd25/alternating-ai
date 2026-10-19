@@ -171,24 +171,13 @@ import '../styles/global.css';
             </p>
 
             <a
-              href="mailto:psbd225@gmail.com?subject=Reaching%20out%20to%20Alternating.ai"
+              href="/contact"
               class="btn-primary w-full text-base px-6 py-3.5 mb-4"
             >
               Reach out
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M5 12h14M12 5l7 7-7 7"></path>
               </svg>
-            </a>
-
-            <a
-              href="mailto:psbd225@gmail.com"
-              class="group mb-1 flex items-center justify-center gap-2 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-              </svg>
-              <span class="underline underline-offset-4 decoration-violet-400/40 group-hover:decoration-violet-500">psbd225@gmail.com</span>
             </a>
 
             <div class="flex items-center gap-3 my-5">
@@ -224,18 +213,32 @@ import '../styles/global.css';
     </main>
 
     <script>
+      import { sendMessage } from '../lib/contactForm.js';
+
       const form = document.getElementById('notify-form');
       const msg = document.getElementById('notify-msg');
-      form?.addEventListener('submit', (e) => {
+      form?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = form.querySelector('input[name="email"]').value;
-        const subject = encodeURIComponent('Notify me when Alternating.ai launches');
-        const body = encodeURIComponent(
-          `Please notify me when Alternating.ai launches.\n\nMy email: ${email}`
-        );
-        window.location.href = `mailto:psbd225@gmail.com?subject=${subject}&body=${body}`;
-        msg?.classList.remove('hidden');
-        form?.classList.add('hidden');
+        const done = () => {
+          msg?.classList.remove('hidden');
+          form?.classList.add('hidden');
+        };
+        const result = await sendMessage({
+          name: 'Launch notification request',
+          email,
+          message: 'Please notify me when Alternating.ai launches.',
+          topic: 'Launch notification',
+        });
+        if (result.ok) done();
+        else if (result.fallbackUrl) { window.location.href = result.fallbackUrl; done(); }
+        else {
+          if (msg) {
+            msg.classList.remove('hidden', 'text-emerald-600', 'dark:text-emerald-400');
+            msg.classList.add('text-rose-600', 'dark:text-rose-400');
+            msg.textContent = 'Something went wrong — please try again in a moment.';
+          }
+        }
       });
     </script>
   </body>

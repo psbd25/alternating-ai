@@ -3,18 +3,17 @@
 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-200 dark:border-gray-700 overflow-hidden">
   <div class="bg-gray-100 dark:bg-gray-700/40 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
     <h2 class="text-xl font-bold text-purple-600 dark:text-purple-300">Spelling Bee Practice</h2>
-    <p class="text-sm text-gray-500 dark:text-gray-400">Type a word, then hear it letter-by-letter and whole</p>
+    <p class="text-sm text-gray-500 dark:text-gray-400">Type a word, hear it, then each letter, then it again</p>
   </div>
 
   <div class="p-6 space-y-5">
-    <div id="word-display" class="text-3xl font-bold tracking-[0.3em] text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 min-h-[76px] flex items-center justify-center text-gray-400 dark:text-gray-500">&nbsp;</div>
-
     <div class="flex flex-col sm:flex-row gap-3">
       <input id="spell-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type a word to practice..." class="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" />
       <button id="check-btn" class="px-5 py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-colors">Check</button>
     </div>
 
     <div id="audio-panel" class="hidden rounded-lg border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/20 p-4 space-y-3">
+      <div id="word-display" class="text-3xl font-bold tracking-[0.3em] text-center p-4 bg-white/70 dark:bg-gray-800/70 rounded-lg min-h-[76px] flex items-center justify-center text-gray-900 dark:text-white">&nbsp;</div>
       <p id="countdown-msg" class="text-sm text-purple-700 dark:text-purple-300 text-center"></p>
       <div class="flex flex-col sm:flex-row gap-2">
         <button id="play-now-btn" class="flex-1 px-4 py-2 rounded-lg font-semibold text-white bg-indigo-500 hover:bg-indigo-600 transition-colors">&#128266; Play now</button>
@@ -66,46 +65,119 @@
     let currentWord = '';
 
     const synth = window.speechSynthesis;
+    let session = 0;
+    let activeTimer = null;
+
     function pickVoice() {
-      const v = synth.getVoices().filter((x) => x.lang && x.lang.indexOf('en') === 0);
+      if (!synth) return null;
+      var v = synth.getVoices().filter(function(x) { return x.lang && x.lang.indexOf('en') === 0; });
       return v[0] || null;
     }
     function stopAudio() {
-      if (synth) synth.cancel();
+      session++;
+      if (activeTimer) { clearTimeout(activeTimer); activeTimer = null; }
+      if (synth) {
+        if (synth.paused) synth.resume();
+        synth.cancel();
+      }
     }
-    function speakWhole(word) {
-      if (!synth) return;
+    /*
+      speakUtterance: speak one chunk with a timeout fallback.
+      Firefox (especially on older macOS) can fail to fire onend for very
+      short utterances or after rapid cancel/speak cycles, which used to stall
+      the letter chain permanently.  A session token plus a wall-clock fallback
+      guarantees the chain always advances.
+    */
+    function speakUtterance(text, rate, onDone) {
+      if (!synth) { onDone(); return; }
+      var mySession = session;
+      var u = new SpeechSynthesisUtterance(text);
+      var voice = pickVoice();
+      if (voice) u.voice = voice;
+      u.rate = rate;
+
+      var finished = false;
+      function finish() {
+        if (finished || mySession !== session) return;
+        finished = true;
+        if (activeTimer) { clearTimeout(activeTimer); activeTimer = null; }
+        onDone();
+      }
+
+      // Estimated duration: single letters get a generous 2 s window
+      var timeout = text.length <= 1 ? 2000 : Math.max(1500, 800 + text.length * 300);
+
+      u.onend = finish;
+      u.onerror = function(e) {
+        // 'interrupted' / 'canceled' come from our own stopAudio(); ignore
+        if (e.error === 'interrupted' || e.error === 'canceled') return;
+        finish();
+      };
+
+      // Fallback: advance even if onend never fires
+      activeTimer = setTimeout(finish, timeout);
+
+      // Firefox needs a short delay after cancel() before the next speak()
+      if (synth.paused) synth.resume();
       synth.cancel();
-      const u = new SpeechSynthesisUtterance(word);
-      const voice = pickVoice();
-      if (voice) u.voice = voice;
-      u.rate = 0.85;
-      u.onend = function () { speakLetters(word, 0); };
-      synth.speak(u);
+      setTimeout(function() {
+        if (mySession !== session) return;
+        try { synth.speak(u); } catch(ex) { finish(); return; }
+        // Older Firefox/macOS builds can desync: a stale utterance stays
+        // queued, so the new speak() is silently swallowed. If nothing is
+        // actually speaking a moment later, nudge the engine once.
+        setTimeout(function() {
+          if (finished || mySession !== session || synth.speaking) return;
+          try { synth.cancel(); synth.speak(u); } catch(ex) {}
+          setTimeout(function() {
+            if (!finished && mySession === session && !synth.speaking) finish();
+          }, 900);
+        }, 1100);
+      }, 100);
     }
-    function speakLetters(word, i) {
-      if (!synth) return;
-      if (i >= word.length) return;
-      const u = new SpeechSynthesisUtterance(word[i]);
-      const voice = pickVoice();
-      if (voice) u.voice = voice;
-      u.rate = 0.6;
-      u.pitch = 1.1;
-      u.onend = function () { setTimeout(function () { speakLetters(word, i + 1); }, 300); };
-      synth.speak(u);
+    function speakWordOnce(word) {
+      speakUtterance(word, 0.85, function () {});
+    }
+    function speakLetters(word, i, onDone) {
+      if (i >= word.length) {
+        if (onDone) onDone();
+        return;
+      }
+      speakUtterance(word[i], 0.6, function () {
+        activeTimer = setTimeout(function () {
+          activeTimer = null;
+          speakLetters(word, i + 1, onDone);
+        }, 300);
+      });
+    }
+    // Practice flow: whole word -> each letter -> whole word again.
+    function speakSequence(word) {
+      countdownMsg.textContent = 'Speaking...';
+      speakUtterance(word, 0.85, function () {
+        speakLetters(word, 0, function () {
+          speakUtterance(word, 0.85, function () {
+            countdownMsg.textContent = 'Done! Replay the word or the letters any time.';
+          });
+        });
+      });
     }
     function playNow(word) {
-      countdownMsg.textContent = 'Speaking...';
-      speakWhole(word);
+      if (!word) return;
+      stopAudio();
+      speakSequence(word);
     }
 
+    let countdownTimer = null;
     function startCountdown(word) {
-      let n = 3;
+      stopAudio();
+      if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+      var n = 3;
       countdownMsg.textContent = 'Hearing the word in ' + n + 's...';
-      const timer = setInterval(function () {
+      countdownTimer = setInterval(function () {
         n--;
         if (n <= 0) {
-          clearInterval(timer);
+          clearInterval(countdownTimer);
+          countdownTimer = null;
           playNow(word);
         } else {
           countdownMsg.textContent = 'Hearing the word in ' + n + 's...';
@@ -224,10 +296,10 @@
     });
     playNowBtn.addEventListener('click', function () { playNow(currentWord); });
     replayWordBtn.addEventListener('click', function () {
-      if (currentWord) { stopAudio(); speakWhole(currentWord); }
+      if (currentWord) { stopAudio(); speakWordOnce(currentWord); }
     });
     replayLettersBtn.addEventListener('click', function () {
-      if (currentWord && synth) { synth.cancel(); speakLetters(currentWord, 0); }
+      if (currentWord) { stopAudio(); speakLetters(currentWord, 0); }
     });
     copyBtn.addEventListener('click', copyWords);
     clearBtn.addEventListener('click', function () {

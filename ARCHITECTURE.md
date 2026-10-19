@@ -26,7 +26,9 @@ via `mailto:` links (see §8).
 | URL            | File                        | Purpose                                                                                                              |
 | -------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `/`            | `src/pages/index.astro`     | Home — animated "coming soon" hero, feature cards, tech chips, blog previews, FAQ, CTA.                              |
-| `/business`    | `src/pages/business.astro`  | Business/education page — how-it-works steps, "Questions we can help you answer", CTA card with email + notify form. |
+| `/business`    | `src/pages/business.astro`  | Business/education page — how-it-works steps, "Questions we can help you answer", CTA card with contact link + notify form. |
+| `/apps`        | `src/pages/apps.astro`      | Educational apps grid — currently hosts the Spelling Bee practice app (`SpellingBee.astro`).                            |
+| `/contact`     | `src/pages/contact.astro`   | Contact Us — name/email/message form that opens the visitor's mail client with a prefilled note (§8).                  |
 | `/blog`        | `src/pages/blog.astro`      | Blog listing — all posts sorted by date, keyword search, tag filter (`?tag=`), topic stats.                          |
 | `/blog/<slug>` | `src/pages/blog/[id].astro` | Individual post — renders the Markdown, read-time, tags, author note, prev/next.                                     |
 
@@ -169,19 +171,40 @@ in search, and gets its own `/blog/<slug>` URL automatically.
 
 ---
 
-## 8. Email / contact (all → `psbd225@gmail.com`)
+## 8. Email / contact (no public address)
 
-The site has no backend. Every "send us your email" path uses a `mailto:` link to
-**psbd225@gmail.com**, which opens the visitor's own mail client:
+The contact address is **not displayed anywhere** on the site. The primary contact form
+posts directly to a serverless endpoint that emails the owner via Cloudflare Email
+Service (§8.1); the remaining forms still open the visitor's mail client via `mailto:`,
+with the address assembled from parts at runtime (e.g. `['psbd225', 'gmail.com'].join('@')`)
+so no full plaintext address ships in the HTML/JS:
 
-- **Business CTA card** — the "Reach out" button, a clickable `psbd225@gmail.com` link, and the
-  "Get notified" email form (subject + pre-filled body).
-- **Footer** — the "Reach Out" email link.
-- **Newsletter** banner — the "Get notified" form.
-- **Home CTA** — "Notified you before we launch" form.
+- **`/contact` page** — name/email/message form → `POST /api/contact` (Pages Function in
+  `functions/api/contact.js`) → `sendEmail` to `contact@alternating.ai`, which Email
+  Routing forwards to the owner's Gmail. Includes a honeypot + optional Turnstile (§8.1).
+- **Business CTA card** — "Reach out" button links to `/contact`; the "Get notified"
+  launch-notification form uses the assembled-address `mailto:`.
+- **Footer** — "Contact Us" links to `/contact` (the raw email link was removed).
+- **Newsletter** banner — the subscribe form uses the assembled-address `mailto:`.
 
-To change the address later: search for `psbd225@gmail.com` and replace. (Optionally, swap
-`mailto:` for a real form backend so submissions land in an inbox — see §12.)
+### 8.1 Contact form backend (Cloudflare Pages Function — all free)
+
+- **`functions/api/contact.js`** — POST handler: validates fields (length caps, email
+  format), checks the honeypot (hidden `company` field), verifies the Turnstile token when
+  the `TURNSTILE_SECRET` env var is set, then sends via `import { sendEmail } from
+  "cloudflare:email"`. Replies to the visitor's address via a `Reply-To` header.
+- **One-time Cloudflare dashboard setup (free):**
+  1. Email Routing: add `alternating.ai`, create forwarding rule
+     `contact@alternating.ai` → owner's Gmail, verify DNS.
+  2. Email Sending: onboard/verify `alternating.ai` so it can be the `from` address.
+  3. Optional: Turnstile widget — site key goes in the frontmatter of
+     `src/pages/contact.astro`; secret goes in the Pages project env vars.
+  4. Optional: one WAF rate-limiting rule on `/api/contact` (Free plan allows 1 rule).
+- Until steps 1–2 are done, submissions fail with the 502 "try again later" message.
+
+To change the recipient: edit `RECIPIENT` in `functions/api/contact.js`. To change the
+recipient of the remaining `mailto:` forms: search for the `psbd225` / `gmail.com` string
+parts and replace them (Business, Newsletter).
 
 ---
 
@@ -193,9 +216,9 @@ To change the address later: search for `psbd225@gmail.com` and replace. (Option
   violet→indigo→fuchsia tile, paired with the **`alternating.ai`** wordmark (lowercase, bold,
   `.ai` in the brand gradient). Used as `<Logo size="sm|md|lg" />` in the header and footer. The
   favicon (`public/favicon.svg`) is the same mark as a standalone icon.
-- **`Header.astro`** — fixed top nav (logo, Home/Blog/Business, "Get Started" CTA, dark-mode
+- **`Header.astro`** — fixed top nav (logo, Home/Blog/Apps/Business/Contact, "Get Started" CTA, dark-mode
   toggle). Props: `title`, `description` (used for meta). Adds a scroll shadow.
-- **`Footer.astro`** — logo + tagline, nav columns, contact (email, location "Nepal"), social links
+- **`Footer.astro`** — logo + tagline, nav columns, contact (Contact Us link, location "Nepal"), social links
   (X / GitHub / LinkedIn), copyright.
 - **`Newsletter.astro`** — reusable "join the list" banner + `mailto:` form.
 
@@ -241,7 +264,7 @@ Leftover / not wired in (safe to ignore or delete): `src/components/ThemeToggle.
 
 **Change the contact email**
 
-- Replace `psbd225@gmail.com` (Business, Footer, Newsletter, Home).
+- Replace the `psbd225` / `gmail.com` string parts (Contact, Business, Newsletter).
 
 ---
 

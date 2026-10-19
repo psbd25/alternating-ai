@@ -45,16 +45,24 @@
   </div>
 
   <script>
-    document.querySelector('#newsletter-form')?.addEventListener('submit', (e) => {
+    import { sendMessage } from '../lib/contactForm.js';
+
+    document.querySelector('#newsletter-form')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const form = e.target;
       const email = form.querySelector('input[name="email"]')?.value || '';
-      const subject = encodeURIComponent('Newsletter signup — Alternating.ai');
-      const body = encodeURIComponent(
-        `Hi, I'd like to subscribe to the Alternating.ai newsletter and be notified about the launch.\n\nMy email: ${email}`
-      );
-      window.location.href = `mailto:psbd225@gmail.com?subject=${subject}&body=${body}`;
-      form.innerHTML = '<p style="color:#ffffff;font-weight:600;font-size:0.875rem;">Thanks for subscribing! We’ll be in touch soon. ✉️</p>';
+      const done = () => {
+        form.innerHTML = '<p style="color:#ffffff;font-weight:600;font-size:0.875rem;">Thanks for subscribing! We’ll be in touch soon. ✉️</p>';
+      };
+      const result = await sendMessage({
+        name: 'Newsletter signup',
+        email,
+        message: "Hi, I'd like to subscribe to the Alternating.ai newsletter and be notified about the launch.",
+        topic: 'Newsletter signup',
+      });
+      if (result.ok) done();
+      else if (result.fallbackUrl) { window.location.href = result.fallbackUrl; done(); }
+      else form.innerHTML = '<p style="color:#ffffff;font-weight:600;font-size:0.875rem;">Something went wrong — please try again in a moment.</p>';
     });
   </script>
 </section>
