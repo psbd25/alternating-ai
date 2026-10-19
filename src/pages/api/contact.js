@@ -11,11 +11,21 @@
 //   3. Optional: Turnstile — site key in src/pages/contact.astro, secret
 //      set as the TURNSTILE_SECRET var on this Worker
 
-import { sendEmail } from "cloudflare:email";
-
 // Server-only: this route must run on the Cloudflare Worker runtime, where
 // `cloudflare:email` exists. Do not prerender it at static build time.
 export const prerender = false;
+
+// Load the email module lazily. If the module is unavailable on this Worker
+// (compatibility configuration), degrade to a clean 502 (client falls back
+// to mailto) instead of a hard 500 from a failed top-level import.
+async function getSendEmail() {
+  try {
+    const mod = await import("cloudflare:email");
+    return mod.sendEmail;
+  } catch {
+    return null;
+  }
+}
 
 const RECIPIENT = "contact@alternating.ai";
 const MAX_NAME = 100;
@@ -86,6 +96,14 @@ export async function POST({ request, locals, env }) {
     if (!result.success) {
       return json({ ok: false, error: "Security check failed. Please try again." }, 403);
     }
+  }
+
+  const sendEmail = await getSendEmail();
+  if (!sendEmail) {
+    return json(
+      { ok: false, error: "Email service is not available on this deployment yet. Please try again later." },
+      502
+    );
   }
 
   const headers = {};
