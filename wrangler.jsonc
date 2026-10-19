@@ -8,6 +8,9 @@
 		"directory": "./dist",
 		"binding": "ASSETS"
 	},
+	"send_email": [
+		{ "name": "EMAIL", "destination_address": "contact@alternating.ai" }
+	],
 	"observability": {
 		"enabled": true
 	}

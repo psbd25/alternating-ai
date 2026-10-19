@@ -4,6 +4,14 @@
 // Deployed as part of the Worker via the @astrojs/cloudflare adapter
 // (NOT the Pages `functions/` directory — that is ignored in this setup).
 //
+// Current Cloudflare Email Service API (no module import needed):
+//   - `send_email` binding named EMAIL in wrangler.jsonc, restricted to
+//     contact@alternating.ai
+//   - `import { env } from "cloudflare:workers"` for bindings
+//     (Astro v6+: Astro.locals.env no longer exists)
+//   - `env.EMAIL.send({...})` — the old `sendEmail` function in
+//     `cloudflare:email` no longer exists
+//
 // One-time Cloudflare dashboard setup (all free — see ARCHITECTURE.md §8.1):
 //   1. Email Routing: add alternating.ai, forwarding rule
 //      contact@alternating.ai -> owner's Gmail inbox
@@ -11,21 +19,11 @@
 //   3. Optional: Turnstile — site key in src/pages/contact.astro, secret
 //      set as the TURNSTILE_SECRET var on this Worker
 
-// Server-only: this route must run on the Cloudflare Worker runtime, where
-// `cloudflare:email` exists. Do not prerender it at static build time.
-export const prerender = false;
+import { env } from "cloudflare:workers";
 
-// Load the email module lazily. If the module is unavailable on this Worker
-// (compatibility configuration), degrade to a clean 502 (client falls back
-// to mailto) instead of a hard 500 from a failed top-level import.
-async function getSendEmail() {
-  try {
-    const mod = await import("cloudflare:email");
-    return mod.sendEmail;
-  } catch {
-    return null;
-  }
-}
+// Server-only: this route must run on the Cloudflare Worker runtime.
+// Do not prerender it at static build time.
+export const prerender = false;
 
 const RECIPIENT = "contact@alternating.ai";
 const MAX_NAME = 100;
@@ -43,10 +41,7 @@ export async function GET() {
   return json({ ok: false, error: "Method not allowed." }, 405);
 }
 
-export async function POST({ request, locals, env }) {
-  // Bindings may surface as `locals.env` or `env` depending on adapter version.
-  const envObj = (locals && locals.env) || env || {};
-
+export async function POST({ request }) {
   let data;
   try {
     data = await request.json();
@@ -77,7 +72,7 @@ export async function POST({ request, locals, env }) {
   }
 
   // Turnstile: only enforced once TURNSTILE_SECRET is configured.
-  const turnstileSecret = envObj.TURNSTILE_SECRET;
+  const turnstileSecret = env.TURNSTILE_SECRET;
   if (turnstileSecret) {
     if (!token) {
       return json({ ok: false, error: "Security check not complete. Please try again." }, 403);
@@ -98,28 +93,27 @@ export async function POST({ request, locals, env }) {
     }
   }
 
-  const sendEmail = await getSendEmail();
-  if (!sendEmail) {
+  // Send through the `send_email` binding declared in wrangler.jsonc.
+  if (!env.EMAIL || typeof env.EMAIL.send !== "function") {
     return json(
-      { ok: false, error: "Email service is not available on this deployment yet. Please try again later." },
+      { ok: false, error: "Email binding (EMAIL) is missing from the Worker configuration." },
       502
     );
   }
 
-  const headers = {};
-  if (email) headers["Reply-To"] = email;
-
   try {
-    await sendEmail({
+    await env.EMAIL.send({
       from: RECIPIENT,
-      to: [RECIPIENT],
+      to: RECIPIENT,
       subject: `Alternating.ai — ${topic || 'New message'}`,
       text: `${message}\n\n—\n${name}${email ? " <" + email + ">" : ""}`,
-      headers,
+      replyTo: email || undefined,
     });
-  } catch {
+  } catch (err) {
+    // Errors carry a `code` property (e.g. domain not onboarded). Surface it
+    // so the deployment can be diagnosed from the client console.
     return json(
-      { ok: false, error: "Something went wrong sending your message. Please try again later." },
+      { ok: false, error: "Email send failed" + (err.code ? " [" + err.code + "]" : "") + ": " + (err.message || err) },
       502
     );
   }

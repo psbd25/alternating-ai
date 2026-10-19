@@ -195,9 +195,11 @@ pipeline — server code lives in Astro's `src/pages/api/`.
 
 - **`src/pages/api/contact.js`** — POST handler at `/api/contact`: validates fields
   (length caps, email format), checks the honeypot (hidden `company` field), verifies
-  the Turnstile token when the `TURNSTILE_SECRET` var is set, then sends via
-  `import { sendEmail } from "cloudflare:email"`. Replies to the visitor's address via a
-  `Reply-To` header. `topic` from the request becomes the email subject label.
+  the Turnstile token when the `TURNSTILE_SECRET` var is set, then sends via the
+  **`EMAIL` send-email binding** (`env.EMAIL.send()`, declared in `wrangler.jsonc` and
+  restricted to `contact@alternating.ai`; bindings come from
+  `import { env } from "cloudflare:workers"`). Uses `replyTo` for the visitor's address.
+  `topic` from the request becomes the email subject label.
 - **One-time Cloudflare dashboard setup (free):**
   1. Email Routing: add `alternating.ai`, create forwarding rule
      `contact@alternating.ai` → owner's Gmail, verify DNS.
