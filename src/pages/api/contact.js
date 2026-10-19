@@ -1,14 +1,21 @@
-// Cloudflare Pages Function — direct contact form handler (no mailto).
+// Contact form endpoint — the direct-send backend for every "reach out"
+// form on the site (contact page, newsletter banner, business "get notified").
 //
-// Dashboard setup (all free — see ARCHITECTURE.md "Contact form"):
+// Deployed as part of the Worker via the @astrojs/cloudflare adapter
+// (NOT the Pages `functions/` directory — that is ignored in this setup).
+//
+// One-time Cloudflare dashboard setup (all free — see ARCHITECTURE.md §8.1):
 //   1. Email Routing: add alternating.ai, forwarding rule
-//      contact@alternating.ai -> your Gmail inbox
-//   2. Email Sending: onboard the domain (auto-creates the DNS records) so
-//      contact@alternating.ai becomes a verified sending address
-//   3. Optional: Turnstile — paste the site key in src/pages/contact.astro
-//      and set the secret as env var TURNSTILE_SECRET on this Pages project
+//      contact@alternating.ai -> owner's Gmail inbox
+//   2. Email Sending: onboard/verify the domain so it can be the `from`
+//   3. Optional: Turnstile — site key in src/pages/contact.astro, secret
+//      set as the TURNSTILE_SECRET var on this Worker
 
 import { sendEmail } from "cloudflare:email";
+
+// Server-only: this route must run on the Cloudflare Worker runtime, where
+// `cloudflare:email` exists. Do not prerender it at static build time.
+export const prerender = false;
 
 const RECIPIENT = "contact@alternating.ai";
 const MAX_NAME = 100;
@@ -22,12 +29,13 @@ function json(body, status = 200) {
   });
 }
 
-export async function onRequest(context) {
-  const { request, env } = context;
+export async function GET() {
+  return json({ ok: false, error: "Method not allowed." }, 405);
+}
 
-  if (request.method !== "POST") {
-    return json({ ok: false, error: "Method not allowed." }, 405);
-  }
+export async function POST({ request, locals, env }) {
+  // Bindings may surface as `locals.env` or `env` depending on adapter version.
+  const envObj = (locals && locals.env) || env || {};
 
   let data;
   try {
@@ -59,7 +67,8 @@ export async function onRequest(context) {
   }
 
   // Turnstile: only enforced once TURNSTILE_SECRET is configured.
-  if (env.TURNSTILE_SECRET) {
+  const turnstileSecret = envObj.TURNSTILE_SECRET;
+  if (turnstileSecret) {
     if (!token) {
       return json({ ok: false, error: "Security check not complete. Please try again." }, 403);
     }
@@ -68,7 +77,7 @@ export async function onRequest(context) {
       const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `secret=${encodeURIComponent(env.TURNSTILE_SECRET)}&response=${encodeURIComponent(token)}`,
+        body: `secret=${encodeURIComponent(turnstileSecret)}&response=${encodeURIComponent(token)}`,
       });
       result = await res.json();
     } catch {

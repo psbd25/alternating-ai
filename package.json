@@ -10,12 +10,15 @@
     "build": "astro build",
     "preview": "astro preview",
     "icons": "node scripts/generate-icons.mjs",
-    "astro": "astro"
+    "astro": "astro",
+    "generate-types": "wrangler types"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^14.4.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.3.5"
+    "astro": "^7.3.5",
+    "wrangler": "^4.151.2"
   },
   "allowScripts": {
     "esbuild": true

@@ -187,12 +187,17 @@ so no full plaintext address ships in the HTML/JS:
 - **Footer** — "Contact Us" links to `/contact` (the raw email link was removed).
 - **Newsletter** banner — the subscribe form uses the assembled-address `mailto:`.
 
-### 8.1 Contact form backend (Cloudflare Pages Function — all free)
+### 8.1 Contact form backend (Astro API route — all free)
 
-- **`functions/api/contact.js`** — POST handler: validates fields (length caps, email
-  format), checks the honeypot (hidden `company` field), verifies the Turnstile token when
-  the `TURNSTILE_SECRET` env var is set, then sends via `import { sendEmail } from
-  "cloudflare:email"`. Replies to the visitor's address via a `Reply-To` header.
+The site is deployed as a **Worker** (`npx wrangler deploy` + `wrangler.jsonc` +
+`@astrojs/cloudflare` adapter). A root `functions/` directory is **not** used in this
+pipeline — server code lives in Astro's `src/pages/api/`.
+
+- **`src/pages/api/contact.js`** — POST handler at `/api/contact`: validates fields
+  (length caps, email format), checks the honeypot (hidden `company` field), verifies
+  the Turnstile token when the `TURNSTILE_SECRET` var is set, then sends via
+  `import { sendEmail } from "cloudflare:email"`. Replies to the visitor's address via a
+  `Reply-To` header. `topic` from the request becomes the email subject label.
 - **One-time Cloudflare dashboard setup (free):**
   1. Email Routing: add `alternating.ai`, create forwarding rule
      `contact@alternating.ai` → owner's Gmail, verify DNS.
