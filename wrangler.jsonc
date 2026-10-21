@@ -9,7 +9,7 @@
 		"binding": "ASSETS"
 	},
 	"send_email": [
-		{ "name": "EMAIL", "destination_address": "contact@alternating.ai" }
+		{ "name": "EMAIL" }
 	],
 	"observability": {
 		"enabled": true
