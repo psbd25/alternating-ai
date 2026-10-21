@@ -10,7 +10,7 @@
 //      The form always has a working path.
 //
 // Paste your Worker's URL here once it is deployed:
-const EXTERNAL_CONTACT_ENDPOINT = ''; // e.g. 'https://contact-gateway.psbd125.workers.dev'
+const EXTERNAL_CONTACT_ENDPOINT = 'https://tiny-snowflake-9654.psbd125.workers.dev';
 
 const FALLBACK_RECIPIENT = ['psbd225', 'gmail.com'].join('@');
 
