@@ -2,11 +2,15 @@
 // the /contact page, the Newsletter banner (home + blog) and the
 // business "get notified" form.
 //
-// All of them POST to the Cloudflare Pages Function at /api/contact,
-// which emails the owner via Cloudflare Email Service. When the endpoint
-// is unavailable (local dev, or not yet deployed), we return a prefilled
-// mailto: URL so the caller can fall back to the visitor's mail client
-// — the form always has a working path.
+// Delivery priority:
+//   1. EXTERNAL_CONTACT_ENDPOINT — your standalone dual-purpose Cloudflare
+//      Worker (sends directly to the owner's inbox) when a URL is set.
+//   2. Otherwise the site's own /api/contact route (send_email binding).
+//   3. Otherwise a prefilled mailto: URL (the visitor's mail client).
+//      The form always has a working path.
+//
+// Paste your Worker's URL here once it is deployed:
+const EXTERNAL_CONTACT_ENDPOINT = ''; // e.g. 'https://contact-gateway.psbd125.workers.dev'
 
 const FALLBACK_RECIPIENT = ['psbd225', 'gmail.com'].join('@');
 
@@ -18,11 +22,21 @@ function mailtoUrl(subject, message, name, email) {
   return 'mailto:' + FALLBACK_RECIPIENT + '?subject=' + s + '&body=' + b;
 }
 
+async function postJson(url, payload) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  return { status: res.status, data };
+}
+
 /**
- * Send a message via /api/contact.
+ * Send a message via the configured contact endpoint.
  *
  * @param {object} p
- * @param {string} p.name      Sender name (required by the endpoint)
+ * @param {string} p.name      Sender name
  * @param {string} p.email     Sender email (used for Reply-To)
  * @param {string} p.message   Message body
  * @param {string} p.topic     Short label used for the email subject
@@ -38,16 +52,17 @@ export async function sendMessage({
   company = '',
   token = '',
 } = {}) {
+  const payload = { name, email, message, topic, company, token };
+  const endpoint = EXTERNAL_CONTACT_ENDPOINT || '/api/contact';
+
   try {
-    const res = await fetch('/api/contact', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, message, topic, company, token }),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (res.ok && data.ok) return { ok: true };
-    // Endpoint missing or broken (local dev, not deployed yet) -> mailto.
-    if (res.status === 404 || res.status >= 500) {
+    const { status, data } = await postJson(endpoint, payload);
+    // /api/contact answers {ok:true}; the external Worker answers {success:true}.
+    if (status >= 200 && status < 300 && (data.ok || data.success)) {
+      return { ok: true };
+    }
+    // Endpoint missing or server-side failure -> mailto fallback.
+    if (status === 404 || status >= 500) {
       return { ok: false, fallbackUrl: mailtoUrl(topic, message, name, email) };
     }
     return { ok: false, error: data.error || 'Something went wrong. Please try again.' };

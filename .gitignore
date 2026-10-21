@@ -28,3 +28,7 @@ BLOG_ADD_GUIDE.md
 
 # wrangler local state/cache
 .wrangler/
+
+# Deployed via the Cloudflare dashboard - contains the owner's personal
+# email address; must never be committed to this public repo.
+infrastructure/contact-worker.js
